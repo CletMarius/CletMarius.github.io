@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clet Marius – Développeur Web</title>
+  
+  <style>
+    :root {
+      --gold: #D4A017;
+      --gold-light: #F0C040;
+      --dark: #0D0D0D;
+      --dark2: #141414;
+      --dark3: #1A1A1A;
+      --card: #1E1E1E;
+      --text: #E8E8E8;
+      --muted: #888;
+      --accent: #D4A017;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: Georgia, serif;
+      background: var(--dark);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── CURSOR ── */
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.1s;
+    }
+    .cursor-ring {
+      width: 35px; height: 35px;
+      border: 1.5px solid var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transition: all 0.15s ease;
+      opacity: 0.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 4rem;
+      background: rgba(13,13,13,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212,160,23,0.15);
+    }
+    .logo {
+      font-family: 'Courier New', monospace;
+      font-size: 1.1rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 4rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 80% 50%, rgba(212,160,23,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(212,160,23,0.04) 0%, transparent 70%);
+    }
+
+    .grid-lines {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(212,160,23,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212,160,23,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 700px; }
+
+    .hero-tag {
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: var(--gold);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 1;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .hero-name {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      margin-bottom: 1rem;
+      opacity: 1;
+      animation: fadeUp 0.8s 0.4s forwards;
+    }
+
+    .hero-name span { color: var(--gold); }
+
+    .hero-title {
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      color: var(--muted);
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+      opacity: 1;
+      animation: fadeUp 0.8s 0.6s forwards;
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: #AAA;
+      line-height: 1.8;
+      max-width: 500px;
+      margin-bottom: 2.5rem;
+      opacity: 1;
+      animation: fadeUp 0.8s 0.8s forwards;
+    }
+
+    .hero-btns {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      opacity: 1;
+      animation: fadeUp 0.8s 1s forwards;
+    }
+
+    .btn-primary {
+      padding: 0.9rem 2rem;
+      background: var(--gold);
+      color: #000;
+      font-family: Georgia, serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    }
+    .btn-primary:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      padding: 0.9rem 2rem;
+      background: transparent;
+      color: var(--gold);
+      font-family: Georgia, serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid rgba(212,160,23,0.4);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-secondary:hover {
+      border-color: var(--gold);
+      background: rgba(212,160,23,0.05);
+    }
+
+    .hero-number {
+      position: absolute;
+      right: 4rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Courier New', monospace;
+      font-size: 12rem;
+      font-weight: 700;
+      color: rgba(212,160,23,0.04);
+      line-height: 1;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 6rem 4rem; }
+
+    .section-label {
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      color: var(--gold);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800;
+      margin-bottom: 3rem;
+      line-height: 1.1;
+    }
+
+    .section-title span { color: var(--gold); }
+
+    /* ── ABOUT ── */
+    #about { background: var(--dark2); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .about-text p {
+      color: #AAA;
+      line-height: 1.9;
+      margin-bottom: 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid rgba(212,160,23,0.1);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .stat-card:hover { border-color: rgba(212,160,23,0.4); }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--gold);
+    }
+
+    .stat-number {
+      font-family: 'Courier New', monospace;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ── SKILLS ── */
+    #skills { background: var(--dark); }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .skill-category {
+      background: var(--card);
+      border: 1px solid rgba(212,160,23,0.08);
+      padding: 2rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .skill-category:hover {
+      border-color: rgba(212,160,23,0.3);
+      transform: translateY(-4px);
+    }
+    .skill-category::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+    .skill-category:hover::after { opacity: 1; }
+
+    .skill-cat-title {
+      font-size: 0.75rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      font-family: 'Courier New', monospace;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .skill-tag {
+      padding: 0.35rem 0.8rem;
+      background: rgba(212,160,23,0.08);
+      border: 1px solid rgba(212,160,23,0.15);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-family: 'Courier New', monospace;
+      transition: all 0.2s;
+    }
+    .skill-tag:hover {
+      background: rgba(212,160,23,0.2);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── PROJECTS ── */
+    #projects { background: var(--dark2); }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      background: var(--card);
+      border: 1px solid rgba(212,160,23,0.08);
+      padding: 2rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .project-card:hover {
+      border-color: rgba(212,160,23,0.35);
+      transform: translateY(-6px);
+    }
+
+    .project-number {
+      font-family: 'Courier New', monospace;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: rgba(212,160,23,0.06);
+      position: absolute;
+      top: 1rem; right: 1.5rem;
+      line-height: 1;
+    }
+
+    .project-type {
+      font-family: 'Courier New', monospace;
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .project-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .project-desc {
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-tag {
+      padding: 0.2rem 0.6rem;
+      background: rgba(212,160,23,0.06);
+      border: 1px solid rgba(212,160,23,0.12);
+      font-size: 0.7rem;
+      font-family: 'Courier New', monospace;
+      color: var(--muted);
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: gap 0.2s;
+    }
+    .project-link:hover { gap: 0.8rem; }
+
+    /* ── EXPERIENCE ── */
+    #experience { background: var(--dark); }
+
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 0 0 3rem 2rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -0.3rem; top: 0.4rem;
+      width: 8px; height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+      border: 2px solid var(--dark);
+      box-shadow: 0 0 10px rgba(212,160,23,0.5);
+    }
+
+    .timeline-date {
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .timeline-company {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .timeline-desc {
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.7;
+    }
+
+    /* ── CONTACT ── */
+    #contact {
+      background: var(--dark2);
+      text-align: center;
+    }
+
+    .contact-inner { max-width: 600px; margin: 0 auto; }
+
+    .contact-email {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(212,160,23,0.3);
+      padding-bottom: 0.3rem;
+      transition: border-color 0.3s;
+      display: inline-block;
+      margin: 1.5rem 0 2.5rem;
+    }
+    .contact-email:hover { border-color: var(--gold); }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      padding: 0.7rem 1.5rem;
+      border: 1px solid rgba(212,160,23,0.2);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+    }
+    .social-link:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+      background: rgba(212,160,23,0.05);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem 4rem;
+      border-top: 1px solid rgba(212,160,23,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 1; transform: translateY(0); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: translateY(0);
+      transition: all 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 4rem 1.5rem; }
+      #hero { padding: 7rem 1.5rem 3rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .hero-number { display: none; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Nav -->
+  <nav>
+    <div class="logo">CM_DEV</div>
+    <ul class="nav-links">
+      <li><a href="#about">À propos</a></li>
+      <li><a href="#skills">Compétences</a></li>
+      <li><a href="#projects">Projets</a></li>
+      <li><a href="#experience">Expérience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="grid-lines"></div>
+    <div class="hero-content">
+      <p class="hero-tag">// Développeur Web & Backend</p>
+      <h1 class="hero-name">Clet Marius<br><span>RATSIMANDRARA</span></h1>
+      <p class="hero-title">Python • Angular • React • Flask • Django</p>
+      <p class="hero-desc">
+        Étudiant en Master 2 Informatique à l'ISPM, passionné par le développement backend et la création d'APIs robustes. Je construis des solutions web concrètes et efficaces.
+      </p>
+      <div class="hero-btns">
+        <a href="#projects" class="btn-primary">Voir mes projets</a>
+        <a href="#contact" class="btn-secondary">Me contacter</a>
+      </div>
+    </div>
+    <div class="hero-number">01</div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="reveal">
+      <p class="section-label">// 01 — À propos</p>
+      <h2 class="section-title">Qui suis-<span>je</span> ?</h2>
+    </div>
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <p>Développeur web passionné basé à Antananarivo, Madagascar. Après 5 ans d'études en informatique à l'ISPM, je me spécialise dans le développement backend avec Python et ses frameworks (Flask, FastAPI, Django).</p>
+        <p>J'aime concevoir des architectures robustes, créer des APIs sécurisées et résoudre des problèmes techniques complexes. Mon projet Manjifa, une plateforme e-commerce complète développée en environnement professionnel, illustre ma capacité à livrer des applications de qualité.</p>
+        <p>Curieux, rigoureux et patient, je suis toujours en quête de nouvelles connaissances — notamment en Intelligence Artificielle (Machine Learning, Deep Learning).</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">5+</div>
+          <div class="stat-label">Ans de formation</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">4+</div>
+          <div class="stat-label">Projets réalisés</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">10+</div>
+          <div class="stat-label">Technologies</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">M2</div>
+          <div class="stat-label">Niveau d'études</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section id="skills">
+    <div class="reveal">
+      <p class="section-label">// 02 — Compétences</p>
+      <h2 class="section-title">Stack <span>technique</span></h2>
+    </div>
+    <div class="skills-grid reveal">
+      <div class="skill-category">
+        <div class="skill-cat-title">Backend</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">Flask</span>
+          <span class="skill-tag">Django</span>
+          <span class="skill-tag">FastAPI</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">Express.js</span>
+          <span class="skill-tag">API REST</span>
+          <span class="skill-tag">JWT</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-cat-title">Frontend</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Angular</span>
+          <span class="skill-tag">React</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">HTML5</span>
+          <span class="skill-tag">CSS3</span>
+          <span class="skill-tag">SCSS</span>
+          <span class="skill-tag">Bootstrap</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-cat-title">Base de données</div>
+        <div class="skill-tags">
+          <span class="skill-tag">PostgreSQL</span>
+          <span class="skill-tag">MySQL</span>
+          <span class="skill-tag">SQLite</span>
+          <span class="skill-tag">SQLAlchemy</span>
+          <span class="skill-tag">SQL</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-cat-title">Outils & IA</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Git</span>
+          <span class="skill-tag">GitHub</span>
+          <span class="skill-tag">Trello</span>
+          <span class="skill-tag">Postman</span>
+          <span class="skill-tag">VS Code</span>
+          <span class="skill-tag">Machine Learning</span>
+          <span class="skill-tag">Deep Learning</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <div class="reveal">
+      <p class="section-label">// 03 — Projets</p>
+      <h2 class="section-title">Mes <span>réalisations</span></h2>
+    </div>
+    <div class="projects-grid reveal">
+
+      <div class="project-card">
+        <div class="project-number">01</div>
+        <div class="project-type">Professionnel</div>
+        <h3 class="project-title">Manjifa – E-commerce Multi-rôles</h3>
+        <p class="project-desc">Plateforme e-commerce conçue pour valoriser les produits malgaches. Gestion de 3 rôles (Admin, Vendeur, Client), panier dynamique, paiement et tableaux de bord personnalisés.</p>
+        <div class="project-tags">
+          <span class="project-tag">Flask</span>
+          <span class="project-tag">Angular</span>
+          <span class="project-tag">PostgreSQL</span>
+          <span class="project-tag">JWT</span>
+          <span class="project-tag">Python</span>
+        </div>
+        <a href="https://github.com/CletMarius" target="_blank" class="project-link">Voir sur GitHub →</a>
+      </div>
+
+      <div class="project-card">
+        <div class="project-number">02</div>
+        <div class="project-type">Académique</div>
+        <h3 class="project-title">Jeu Éducatif Interactif</h3>
+        <p class="project-desc">Application web éducative pour enfants de 6 à 10 ans. Système de progression par niveaux, récompenses virtuelles et moteur d'adaptation automatique de la difficulté.</p>
+        <div class="project-tags">
+          <span class="project-tag">JavaScript</span>
+          <span class="project-tag">HTML/CSS</span>
+          <span class="project-tag">Python</span>
+        </div>
+        <span class="project-link" style="color: var(--muted); cursor: default;">Projet académique – Code privé</span>
+      </div>
+
+      <div class="project-card">
+        <div class="project-number">03</div>
+        <div class="project-type">Académique</div>
+        <h3 class="project-title">App Mobile Gestion de Dépenses</h3>
+        <p class="project-desc">Application de gestion de finances personnelles avec catégorisation automatique, rapports mensuels, alertes budgétaires et tableau de bord visuel avec graphiques dynamiques.</p>
+        <div class="project-tags">
+          <span class="project-tag">React Native</span>
+          <span class="project-tag">Node.js</span>
+          <span class="project-tag">MySQL</span>
+        </div>
+        <span class="project-link" style="color: var(--muted); cursor: default;">Projet académique – Code privé</span>
+      </div>
+
+      <div class="project-card">
+        <div class="project-number">04</div>
+        <div class="project-type">Formation Django</div>
+        <h3 class="project-title">Bibliothèque de Mangas – Django</h3>
+        <p class="project-desc">Application web de gestion de mangas développée lors de ma formation Django. CRUD complet, authentification utilisateur, inscription et panneau d'administration Django.</p>
+        <div class="project-tags">
+          <span class="project-tag">Django</span>
+          <span class="project-tag">Python</span>
+          <span class="project-tag">SQLite</span>
+          <span class="project-tag">HTML/CSS</span>
+        </div>
+        <span class="project-link" style="color: var(--muted); cursor: default;">Bientôt disponible sur GitHub</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section id="experience">
+    <div class="reveal">
+      <p class="section-label">// 04 — Parcours</p>
+      <h2 class="section-title">Expérience & <span>Formation</span></h2>
+    </div>
+    <div class="timeline reveal">
+
+      <div class="timeline-item">
+        <div class="timeline-date">02/2025 — 12/2025</div>
+        <div class="timeline-title">Master 2 – Informatique de Gestion, Génie Logiciel & IA</div>
+        <div class="timeline-company">Institut Supérieur Polytechnique de Madagascar (ISPM)</div>
+        <div class="timeline-desc">Spécialisation en développement web fullstack, génie logiciel et intelligence artificielle (Machine Learning, Deep Learning).</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">11/2021 — 07/2022</div>
+        <div class="timeline-title">Développeur Web Fullstack – Stage</div>
+        <div class="timeline-company">Tonga Company – Antananarivo</div>
+        <div class="timeline-desc">Développement de Manjifa, plateforme e-commerce multi-rôles. Backend Flask/Python avec API REST sécurisée JWT, frontend Angular, base de données PostgreSQL.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">2019 — 2023</div>
+        <div class="timeline-title">Licence → Master 1 – Informatique</div>
+        <div class="timeline-company">Institut Supérieur Polytechnique de Madagascar (ISPM)</div>
+        <div class="timeline-desc">Formation en développement logiciel, algorithmes, bases de données et génie logiciel. Réalisation de plusieurs projets académiques en équipe.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">2026 — En cours</div>
+        <div class="timeline-title">Formation Django – EvoluNoob</div>
+        <div class="timeline-company">Formation en ligne (YouTube)</div>
+        <div class="timeline-desc">Développement d'une application de gestion de mangas : CRUD complet, authentification utilisateur et panneau d'administration Django.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <div class="contact-inner reveal">
+      <p class="section-label">// 05 — Contact</p>
+      <h2 class="section-title">Travaillons <span>ensemble</span></h2>
+      <p style="color: #888; font-size: 0.95rem; margin-bottom: 0.5rem;">Disponible immédiatement pour un stage ou une opportunité professionnelle.</p>
+      <a class="contact-email">cletmarius [at] gmail.com</a>
+      <div class="social-links">
+        <a href="https://github.com/CletMarius" target="_blank" class="social-link">GitHub</a>
+        <a href="https://www.linkedin.com/in/marius-clet-ratsimandrara-b09a52279/" target="_blank" class="social-link">LinkedIn</a>
+        <a href="tel:+261328322432" class="social-link">032 83 224 32</a>
+        <a href="tel:+261389713860" class="social-link">038 97 138 60</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <span>© 2026 Clet Marius RATSIMANDRARA</span>
+    <span>Développeur Web • Antananarivo, Madagascar</span>
+  </footer>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx - 5 + 'px';
+      cursor.style.top = my - 5 + 'px';
+    });
+    function animateRing() {
+      rx += (mx - rx - 17.5) * 0.15;
+      ry += (my - ry - 17.5) * 0.15;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.fo
